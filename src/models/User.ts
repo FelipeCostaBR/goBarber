@@ -29,7 +29,7 @@ class User {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @CreateDateColumn()
+  @Column()
   avatar: string;
 }
 
