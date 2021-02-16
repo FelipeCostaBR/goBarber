@@ -1,30 +1,25 @@
 import { startOfHour } from 'date-fns';
-import { getCustomRepository } from 'typeorm';
-import AppError from '../../../shared/errors/AppError';
-import Appointment from '../entities/Appointment';
-import AppointmentsRepository from '../repositories/AppointmentsRepository';
+import { injectable, inject } from 'tsyringe';
+import AppError from '@shared/errors/AppError';
 
-//  recebimento das informacoes
-//  tratativa de erros/excecoes
-//  acesso ao repositorio
+import Appointment from '../infra/typeorm/entities/Appointment';
+import IAppointmentsRepository from '../repositories/IAppointmentsRepository';
 
-interface RequestDTO {
+interface IRequest {
   provider_id: string;
   date: Date;
 }
-
-// dependency inversion (SOLID) Single responsibility principle - Dependency Inversion Principle
-
+@injectable()
 class CreateAppointmentService {
-  public async execute({
-    date,
-    provider_id,
-  }: RequestDTO): Promise<Appointment> {
-    const appointmentsRepository = getCustomRepository(AppointmentsRepository);
+  constructor(
+    @inject('AppointmentRepository')
+    private appointmentsRepository: IAppointmentsRepository,
+  ) {}
 
-    const appointmentDate = startOfHour(date); // regra de negocio
+  public async execute({ date, provider_id }: IRequest): Promise<Appointment> {
+    const appointmentDate = startOfHour(date);
 
-    const findAppointmentInSameDate = await appointmentsRepository.findByDate(
+    const findAppointmentInSameDate = await this.appointmentsRepository.findByDate(
       appointmentDate,
     );
 
@@ -32,11 +27,10 @@ class CreateAppointmentService {
       throw new AppError('This appointment is already booked');
     }
 
-    const appointment = appointmentsRepository.create({
+    const appointment = await this.appointmentsRepository.create({
       provider_id,
       date: appointmentDate,
     });
-    await appointmentsRepository.save(appointment);
 
     return appointment;
   }
