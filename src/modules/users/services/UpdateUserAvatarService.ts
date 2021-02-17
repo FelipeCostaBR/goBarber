@@ -7,7 +7,7 @@ import AppError from '@shared/errors/AppError';
 // import uploadConfig from '@config/upload';
 import IStorageProvider from '@shared/container/providers/StorageProvider/models/IStorageProvider';
 import User from '../infra/typeorm/entities/User';
-import IUserRepository from '../repositories/IUserRepository';
+import IUserRepository from '../repositories/IUsersRepository';
 
 interface IRequest {
   user_id: string;
