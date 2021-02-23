@@ -8,8 +8,6 @@ import {
   Generated,
 } from 'typeorm';
 
-// KISS - Keep It Simples & Stupid
-
 @Entity('user_tokens')
 class UserToken {
   @PrimaryGeneratedColumn('uuid')
